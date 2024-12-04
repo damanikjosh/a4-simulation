@@ -12,19 +12,19 @@ echo "Waiting for Gazebo..." && sleep 10
 
 # Spawn quadrotors
 sleep 5 && echo "Spawning..."
-PX4_GZ_MODEL_POSE=0,10,1.3,0,0,0 PX4_SYS_AUTOSTART=4001 PX4_SIM_MODEL=gz_x500_depth ${PX4_PATH}/build/px4_sitl_default/bin/px4 -i 1 > /dev/null 2>&1 &
+PX4_GZ_MODEL_POSE=0,10,1.3,0,0,0 PX4_SYS_AUTOSTART=4001 PX4_SIM_MODEL=gz_x500_depth /root/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 1 > /dev/null 2>&1 &
 sleep 5 && echo "Spawning..."
-PX4_GZ_MODEL_POSE=2,10,1.3,0,0,0 PX4_SYS_AUTOSTART=4001 PX4_SIM_MODEL=gz_x500_depth ${PX4_PATH}/build/px4_sitl_default/bin/px4 -i 2 > /dev/null 2>&1 &
+PX4_GZ_MODEL_POSE=2,10,1.3,0,0,0 PX4_SYS_AUTOSTART=4001 PX4_SIM_MODEL=gz_x500_depth /root/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 2 > /dev/null 2>&1 &
 
 # Spawn rover
 sleep 5 && echo "Spawning..."
-PX4_GZ_MODEL_POSE=0,50,0,0,0,1.57 PX4_SYS_AUTOSTART=22000 PX4_SIM_MODEL=wam-v ${PX4_PATH}/build/px4_sitl_default/bin/px4 -i 3 > /dev/null 2>&1 &
+PX4_GZ_MODEL_POSE=0,50,0,0,0,1.57 PX4_SYS_AUTOSTART=22000 PX4_SIM_MODEL=wam-v /root/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 3 > /dev/null 2>&1 &
 
 sleep 5 && echo "Spawning..."
-PX4_GZ_MODEL_POSE=5,50,0,0,0,1.57 PX4_SYS_AUTOSTART=22000 PX4_SIM_MODEL=wam-v ${PX4_PATH}/build/px4_sitl_default/bin/px4 -i 4 > /dev/null 2>&1 &
+PX4_GZ_MODEL_POSE=5,50,0,0,0,1.57 PX4_SYS_AUTOSTART=22000 PX4_SIM_MODEL=wam-v /root/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 4 > /dev/null 2>&1 &
 
 sleep 5 && echo "Spawning..."
-PX4_GZ_MODEL_POSE=10,50,0,0,0,1.57 PX4_SYS_AUTOSTART=22000 PX4_SIM_MODEL=wam-v ${PX4_PATH}/build/px4_sitl_default/bin/px4 -i 5 > /dev/null 2>&1 &
+PX4_GZ_MODEL_POSE=10,50,0,0,0,1.57 PX4_SYS_AUTOSTART=22000 PX4_SIM_MODEL=wam-v /root/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 5 > /dev/null 2>&1 &
 
 # Run the script here
 # python3 ${SCRIPT_DIR}/mission_single.py
