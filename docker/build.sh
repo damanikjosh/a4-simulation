@@ -1,0 +1,1 @@
+docker build -t damanikjosh/a4-simulation:base .
