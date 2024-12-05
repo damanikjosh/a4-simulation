@@ -3,7 +3,7 @@
 ## Prerequisites
 
 You will need Gazebo Harmonic. If you use Ubuntu 20.04 or newer, you can follow the A4-simulation [installation gude](/README.md)
-To run the gazebo, change the  follow the [usage guide](#usage) below.
+To run the gazebo, follow the [opening world file with gazebo section](#opening-world-file-with-gazebo) below.
 
 If you want to install Gazebo using conda or mamba, use the following command
 
