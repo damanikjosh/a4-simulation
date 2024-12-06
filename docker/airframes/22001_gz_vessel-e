@@ -12,32 +12,32 @@
 
 PX4_SIMULATOR=${PX4_SIMULATOR:=gz}
 PX4_GZ_WORLD=${PX4_GZ_WORLD:=chundo}
-PX4_SIM_MODEL=${PX4_SIM_MODEL:=wam-v}
+PX4_SIM_MODEL=${PX4_SIM_MODEL:=vessel-e}
 
 param set-default SIM_GZ_EN 1 # Gazebo bridge
 
 # Rover parameters
-param set-default NAV_ACC_RAD 10
-param set-default RA_ACC_RAD_GAIN 2
-param set-default RA_ACC_RAD_MAX 3
+param set-default NAV_ACC_RAD 20
+param set-default RA_ACC_RAD_GAIN 5
+param set-default RA_ACC_RAD_MAX 10
 param set-default RA_LAT_ACCEL_I 0
-param set-default RA_LAT_ACCEL_P 0.02
-param set-default RA_MAX_ACCEL 1
-param set-default RA_MAX_DECEL 1
+param set-default RA_LAT_ACCEL_P 0.1
+param set-default RA_MAX_ACCEL 0.1
+param set-default RA_MAX_DECEL 0.1
 param set-default RA_MAX_JERK 1
 param set-default RA_MAX_LAT_ACCEL 1
-param set-default RA_MAX_SPEED 10
+param set-default RA_MAX_SPEED 2
 param set-default RA_MAX_STR_ANG 0.5236
 param set-default RA_MAX_STR_RATE 36
-param set-default RA_MAX_THR_SPEED 5
+param set-default RA_MAX_THR_SPEED 2
 param set-default RA_SPEED_I 0.1
 param set-default RA_SPEED_P 1
 param set-default RA_WHEEL_BASE 0.321
 
 # Pure Pursuit parameters
 param set-default PP_LOOKAHD_GAIN 2
-param set-default PP_LOOKAHD_MAX 50
-param set-default PP_LOOKAHD_MIN 10
+param set-default PP_LOOKAHD_MAX 100
+param set-default PP_LOOKAHD_MIN 50
 
 # Simulated sensors
 param set-default SENS_EN_GPSSIM 1
@@ -51,20 +51,10 @@ param set-default SIM_GZ_SV_MIN1 0
 param set-default SIM_GZ_SV_MAX1 1000
 param set-default SIM_GZ_SV_DIS1 500
 
-param set-default SIM_GZ_SV_FUNC2 101 # left wheel
-param set-default SIM_GZ_SV_MIN2 0
-param set-default SIM_GZ_SV_MAX2 1000
+param set-default SIM_GZ_SV_FUNC2 201 # Steering
+param set-default SIM_GZ_SV_MIN2 200
+param set-default SIM_GZ_SV_MAX2 800
 param set-default SIM_GZ_SV_DIS2 500
-
-param set-default SIM_GZ_SV_FUNC3 201 # Steering
-param set-default SIM_GZ_SV_MIN3 200
-param set-default SIM_GZ_SV_MAX3 800
-param set-default SIM_GZ_SV_DIS3 500
-
-param set-default SIM_GZ_SV_FUNC4 201 # Steering
-param set-default SIM_GZ_SV_MIN4 200
-param set-default SIM_GZ_SV_MAX4 800
-param set-default SIM_GZ_SV_DIS4 500
 
 param set-default SIM_GZ_SV_REV 0
 
@@ -84,7 +74,7 @@ param set-default SIM_GZ_SV_REV 0
 # param set-default CA_ROTOR1_PY 0.1
 # param set-default CA_ROTOR1_CT 10
 
-param set-default CA_R_REV 3
+param set-default CA_R_REV 1
 
 # param set-default PWM_MAIN_FUNC1 101
 # param set-default PWM_MAIN_FUNC2 102
