@@ -25,7 +25,7 @@ param set-default RA_LAT_ACCEL_P 0.02
 param set-default RA_MAX_ACCEL 1
 param set-default RA_MAX_DECEL 1
 param set-default RA_MAX_JERK 1
-param set-default RA_MAX_LAT_ACCEL 1
+param set-default RA_MAX_LAT_ACCEL 1000
 param set-default RA_MAX_SPEED 10
 param set-default RA_MAX_STR_ANG 0.5236
 param set-default RA_MAX_STR_RATE 36
