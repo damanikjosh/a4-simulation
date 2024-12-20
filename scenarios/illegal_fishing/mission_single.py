@@ -5,11 +5,10 @@ import asyncio
 from mavsdk import System
 from mavsdk.mission import (MissionItem, MissionPlan)
 
-lon_lat_interp = [
-    (127.073103, 34.380241),
-    (127.073482, 34.381216),
-]
-port = 14543
+from mission.read_objectives import read_objectives
+from mission.process_task import process_task
+from mission.solve_task import solve_task
+port = 14544
 
 
 async def run():
@@ -19,7 +18,7 @@ async def run():
     print("Waiting for drone to connect...")
     async for state in drone.core.connection_state():
         if state.is_connected:
-            print(f"-- Connected to drone!")
+            print("-- Connected to drone!")
             break
 
     print_mission_progress_task = asyncio.ensure_future(
@@ -36,7 +35,7 @@ async def run():
             longitude_deg=lon,                              # Longitude in degrees (range: -180 to +180)
             relative_altitude_m=0,                         # Altitude relative to takeoff altitude in metres
             speed_m_s=10,                                    # Speed to use after this mission item (in metres/second)
-            is_fly_through=True,                            # True will make the drone fly through without stopping, while false will make the drone stop on the waypoint
+            is_fly_through=False,                            # True will make the drone fly through without stopping, while false will make the drone stop on the waypoint
             gimbal_pitch_deg=float('nan'),                  # Gimbal pitch (in degrees)
             gimbal_yaw_deg=float('nan'),                    # Gimbal yaw (in degrees)
             camera_action=MissionItem.CameraAction.NONE,    # Camera action to trigger at this mission item
@@ -46,6 +45,7 @@ async def run():
             yaw_deg=float('nan'),                           # Absolute yaw angle (in degrees)
             camera_photo_distance_m=float('nan'),           # Camera photo distance to use after this mission item (in meters)
             vehicle_action=MissionItem.VehicleAction.NONE)) # Vehicle action to trigger at this mission item.
+
 
     mission_plan = MissionPlan(mission_items)
 
@@ -100,4 +100,6 @@ async def observe_is_in_air(drone, running_tasks):
 
 if __name__ == "__main__":
     # Run the asyncio loop
+
+
     asyncio.run(run())
