@@ -15,6 +15,7 @@ services:
     network_mode: host
     volumes:
       - ./scenarios:/root/scenarios # Attach the scenarios folder to the container
+      - ./visualization:/root/visualization # Attach the visualization folder to the container
       - /tmp/.X11-unix:/tmp/.X11-unix
     command: /root/scenarios/illegal_fishing/startup.sh   # Run the startup script
     # command: /root/scenarios/airsim_c-track/startup.sh   # Run the startup script

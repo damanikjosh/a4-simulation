@@ -8,6 +8,10 @@ from mission.process_task import process_task
 from mission.solve_task import solve_task
 from mission.generate_trajectory import get_chungdo_obstacles, generate_trajectory
 
+import os
+
+base_path = os.path.dirname(os.path.realpath(__file__))
+
 obstacles = get_chungdo_obstacles()
 
 async def initialize_vehicle(port):
@@ -73,7 +77,8 @@ async def run():
 
     vehicle_points = [drone1_position, drone2_position, drone3_position]
 
-    obj1_points, obj2_points, obj3_points = read_objectives('data/T_Objectives_latlon.xlsx')
+    # obj1_points, obj2_points, obj3_points = read_objectives('data/T_Objectives_latlon.xlsx')
+    obj1_points, obj2_points, obj3_points = read_objectives(os.path.join(base_path, 'data/T_Objectives_latlon.xlsx'))
     points, reqs, done = process_task(obj1_points, obj2_points, obj3_points)
 
     latlons = solve_task(points, reqs, done, vehicle_points)
