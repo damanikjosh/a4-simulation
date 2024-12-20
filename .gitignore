@@ -19,5 +19,9 @@ log
 sandbox
 
 a4_models
+airsim
+
+# Python
+__pycache__
 
 QGroundControl.AppImage
