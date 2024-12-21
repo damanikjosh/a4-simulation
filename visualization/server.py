@@ -15,7 +15,7 @@ lock = asyncio.Lock()
 async def enable_vehicle(port):
     vehicle = await initialize_vehicle(port)
     if vehicle is None:
-        vehicles[port] = None
+        # vehicles[port] = None
         print(f"Failed to connect to vehicle on {port}")
         return False
     vehicles[port] = vehicle
