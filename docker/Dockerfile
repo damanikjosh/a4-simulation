@@ -48,7 +48,7 @@ RUN git clone https://github.com/PX4/px4_msgs.git src/px4_msgs \
 RUN . /opt/ros/jazzy/setup.sh \
   && colcon build --symlink-install
 
-RUN pip3 install --break-system-packages mavsdk
+RUN pip3 install --break-system-packages mavsdk quart
 
 WORKDIR /root/PX4-Autopilot
 
