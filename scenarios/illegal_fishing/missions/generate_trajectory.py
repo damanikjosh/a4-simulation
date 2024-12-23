@@ -8,6 +8,8 @@ from heapq import heappop, heappush
 def get_chungdo_obstacles():
     # Load data/chungdo_obstacles.gpkg
     gdf = gpd.read_file("data/chungdo_obstacles.gpkg")
+    geometries = gdf.geometry
+    # For each geometry, infl
     return gdf.geometry
 
 def voronoi_sampling(start, end, obstacle_points):
@@ -139,23 +141,28 @@ def is_safe(start, end, obstacles):
 
     return True
 
-def generate_trajectory(lonlat_waypoints, obstacles):
-    safe_waypoints = [lonlat_waypoints[0]]
+def generate_trajectory(points, obstacles):
+    safe_points = [points[0]]
+    safe_points_indices = [0]
 
-    for i in range(1, len(lonlat_waypoints)):
-        start = tuple(lonlat_waypoints[i-1])
-        end = tuple(lonlat_waypoints[i])
+    for i in range(1, len(points)):
+        start = tuple(points[i-1])
+        end = tuple(points[i])
 
         if is_safe(start, end, obstacles):
-            safe_waypoints.append(end)
+            safe_points.append(end)
+            safe_points_indices.append(i)
         else:
             print("Unsafe Path:", start, end)
             # Find a safe path from start to end
             safe_path = plan(start, end, obstacles)
             # print("Safe Path:", safe_path)
-            safe_waypoints.extend(safe_path[1:])
-            
-    return np.array(safe_waypoints)
+            safe_points.extend(safe_path[1:])
+            safe_points_indices.extend([i] * (len(safe_path) - 1))
+    
+    # print("len(safe_points):", len(safe_points))
+    # print("len(safe_points_indices):", len(safe_points_indices))
+    return np.array(safe_points)
 
 if __name__ == "__main__":
     obstacles = get_chungdo_obstacles()

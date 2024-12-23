@@ -10,7 +10,7 @@ RUN . /root/px4_ros2_ws/install/setup.sh \
 
 # Install dependencies here
 # For example:
-RUN pip3 install --break-system-packages pandas openpyxl pyvrp scikit-learn mip geopandas
+RUN pip3 install --break-system-packages pandas openpyxl scikit-learn mip geopandas
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

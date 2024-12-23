@@ -10,6 +10,8 @@ echo "Waiting for Gazebo..." && sleep 5
 
 # Spawn vehicles
 # Tutorial: https://docs.px4.io/main/en/sim_gazebo_gz/multi_vehicle_simulation.html#multiple-vehicles-with-ros-2-and-gazebo
+sleep echo "Open http://127.0.0.1:5000 on browser to launch the visualization!"
+python3 /root/visualization/server.py > /dev/null 2>&1 &
 
 # Spawn quadrotors
 sleep 3 && echo "Spawning quadcopter 1..."
@@ -30,10 +32,8 @@ sleep 3 && echo "Spawning USV 9..."
 PX4_GZ_MODEL_POSE=997,-953,0,0,0,0 PX4_SYS_AUTOSTART=22001 PX4_SIM_MODEL=vessel-e_indicator /root/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 9 > /dev/null 2>&1 &
 
 # Run the script here
-sleep 3 && echo "Running the mission script..."
-python3 mission_multiple.py &
+# sleep 3 && echo "Running the mission script..."
+# python3 mission_multiple.py &
 
-sleep 1 && echo "Open http://127.0.0.1:5000 on browser to launch the visualization!"
-python3 /root/visualization/server.py > /dev/null 2>&1 &
 
 tail -f /dev/null

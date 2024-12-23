@@ -314,7 +314,7 @@ def solve_task(task_points, task_reqs, task_done, vehicle_points):
     task_points = np.array(task_points)
     vehicle_points = np.array(vehicle_points)
 
-    num_vehicles = len(vehicle_points)
+    num_vehicle = len(vehicle_points)
 
     # Get index of points that are not done
     task_idx = np.arange(len(task_points))
@@ -324,25 +324,28 @@ def solve_task(task_points, task_reqs, task_done, vehicle_points):
     # Remove tasks that does not satisfy requirements
     task_avail = [i for i in task_avail if np.isin(task_idx[task_reqs[i] == 1], task_done).all()]
 
+    # Algorithm 1: Open Vehicle Routing Problem
     # solution = solve_ovrp(task_points[task_avail], vehicle_points, vehicle_points)
+
+    # Algorithm 2: Clustered Traveling Salesman Problem
     # solution = solve_cluster_tsp(task_points[task_avail], vehicle_points)
-    solution = solve_hierarchical_ovrp(8, task_points[task_avail], vehicle_points, vehicle_points)
+
+    # Algorithm 3: Hierarchical Open Vehicle Routing Problem
+    solution = solve_hierarchical_ovrp(num_vehicle, task_points[task_avail], vehicle_points, vehicle_points)
+
     solution_points = [task_points[route] for route in solution]
+    solution_idx = [np.array(task_avail)[solution_k] for solution_k in solution]
     print('Solution:')
-    for k, solution_k in enumerate(solution):
-        print('Vehicle', k, ':', np.array(task_avail)[solution_k])
+    for k, solution_k in enumerate(solution_idx):
+        print('Vehicle', k, ':', solution_k)
 
-    # plot_solution(np.array(task_points), vehicle_points, solution)
-
-    return solution_points
-
-    
+    return solution_points, solution_idx
 
 
 if __name__ == '__main__':
     from read_objectives import read_objectives
     from process_task import process_task
-    from generate_trajectory import generate_trajectory, get_chungdo_obstacles
+    from scenarios.illegal_fishing.missions.generate_trajectory import generate_trajectory, get_chungdo_obstacles
 
     vehicle_points = np.array([[127.079049, 34.376794], [127.079049, 34.376794]])
     obstacles = get_chungdo_obstacles()

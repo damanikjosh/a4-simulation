@@ -26,11 +26,12 @@ def process_task(obj1_points, obj2_points, obj3_points):
 
     # Combine all objectives
     all_points = obj1_points + obj2_points + obj3_points
+    all_types = ['surveillance'] * len(obj1_points) + ['search'] * len(obj2_points) + ['handling'] * len(obj3_points)
     all_reqs = np.zeros((len(all_points), len(all_points)))
     all_reqs[len(obj1_points):len(obj1_points)+len(obj2_points), :len(obj1_points)] = obj2_reqs
     all_reqs[len(obj1_points)+len(obj2_points):, len(obj1_points):len(obj1_points)+len(obj2_points)] = obj3_reqs
     all_done = np.zeros(len(all_points))
-    return all_points, all_reqs, all_done
+    return all_points, all_reqs, all_done, all_types
 
 
 if __name__ == '__main__':

@@ -18,8 +18,6 @@ def read_objectives(file_path):
     obj2_points = get_points(obj2_sheet)
     obj3_points = get_points(obj3_sheet)
 
-    
-
     return obj1_points, obj2_points, obj3_points
 
 
