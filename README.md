@@ -14,6 +14,7 @@ A4 Simulator is a Gazebo harmonic + PX4 + ROS2 simulator using Docker. This simu
 
 ```bash
 git clone https://github.com/damanikjosh/a4-simulation.git
+cd a4-simulation
 ```
 
 ### Step 2: Download Additional Files
