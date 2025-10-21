@@ -15,7 +15,7 @@ class WaypointsMission(MissionBase):
         # self.task_indices = np.arange(len(task_points))
         self.done = np.zeros(len(task_points))
 
-    async def initialize(self, relative_altitude_m=30, speed_m_s=10, return_to_launch_after_mission=True):
+    async def initialize(self, relative_altitude_m=30, speed_m_s=10, return_to_launch_after_mission=False):
         await super().initialize()
 
         mission_items = []
@@ -61,10 +61,15 @@ class WaypointsMission(MissionBase):
     async def monitor_progress(self):
         # Monitor mission progress. Exclude first task (takeoff)
         last_task = 0
-        async for mission_progress in self.vehicle.mission.mission_progress():
-            current_task = mission_progress.current
-            if last_task is None:
+        try:
+            async for mission_progress in self.vehicle.mission.mission_progress():
+                current_task = mission_progress.current
+                if last_task is None:
+                    last_task = current_task
+                total_task = mission_progress.total
+                print(f"Vehicle {self.vehicle._port} is at task {current_task}/{total_task}")
                 last_task = current_task
-            total_task = mission_progress.total
-            print(f"Vehicle {self.vehicle._port} is at task {current_task}/{total_task}")
-            last_task = current_task
+
+        except asyncio.CancelledError:
+            await self.vehicle.mission.clear_mission()
+

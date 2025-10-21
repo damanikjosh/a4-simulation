@@ -22,5 +22,5 @@ class SurveillanceMission(WaypointsMission):
             if len(ports) > 0:
                 print(f"Vehicle {self.vehicle._port} sees vehicles: {ports}")
                 if self.on_target_found is not None:
-                    self.on_target_found(vehicles)
+                    self.on_target_found(self.vehicle, vehicles)
             await asyncio.sleep(1)

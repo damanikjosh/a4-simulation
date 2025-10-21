@@ -27,32 +27,46 @@ class MissionBase:
         self.is_enabled = True
         print(f"Mission enabled for vehicle {self.vehicle._port}")
 
+    def disable(self, restart=True):
+        self.is_run = restart
+        self.is_enabled = False
+        self.is_initialized = False
+        print(f"Mission disabled for vehicle {self.vehicle._port}")
+
     async def run(self, *args, **kwargs):
         self.is_run = True
 
-        if not self.is_initialized:
-            raise ValueError("Initialize the mission first. Call initialize() method.")
+        while self.is_run:
+            self.is_run = False
+            while not self.is_enabled:
+                await asyncio.sleep(1)
 
-        while not self.is_enabled:
-            await asyncio.sleep(1)
+            if not self.is_initialized:
+                await self.initialize()
 
-        print(f"Waiting for vehicle {self.vehicle._port} to have a global position estimate...")
-        async for health in self.vehicle.telemetry.health():
-            if health.is_global_position_ok and health.is_home_position_ok:
-                print(f"-- Global position estimate OK for vehicle {self.vehicle._port}")
-                break
-        
-        print(f"-- Arming vehicle on {self.vehicle._port}")
-        await self.vehicle.action.arm()
-        
-        print(f"-- Starting mission for vehicle on vehicle {self.vehicle._port}")
-        await self.on_start(*args, **kwargs)
-        
-        # Monitor mission progress
-        running_tasks = self.get_coroutines()
 
-        # Wait for the mission to complete
-        await self.observe_is_in_air(running_tasks)
+            print(f"Waiting for vehicle {self.vehicle._port} to have a global position estimate...")
+            async for health in self.vehicle.telemetry.health():
+                if health.is_global_position_ok and health.is_home_position_ok:
+                    print(f"-- Global position estimate OK for vehicle {self.vehicle._port}")
+                    break
+            
+            print(f"-- Arming vehicle on {self.vehicle._port}")
+            try:
+                await self.vehicle.action.arm()
+            except Exception as e:
+                # Some vehicles (USVs) may not support arming in the same way.
+                # Don't let that stop mission execution; log and continue.
+                print(f"-- Warning: arming failed for vehicle {self.vehicle._port}: {e}")
+            
+            print(f"-- Starting mission for vehicle on vehicle {self.vehicle._port}")
+            await self.on_start(*args, **kwargs)
+            
+            # Monitor mission progress
+            running_tasks = self.get_coroutines()
+
+            # Wait for the mission to complete
+            await self.observe_is_in_air(running_tasks)
 
 
 
@@ -66,14 +80,14 @@ class MissionBase:
             if is_in_air:
                 was_in_air = is_in_air
 
-            if was_in_air and not is_in_air:
+            if not self.is_enabled or (was_in_air and not is_in_air):
                 for task in running_tasks:
                     task.cancel()
                     try:
                         await task
                     except asyncio.CancelledError:
                         pass
-                print(f"-- Vehicle {self.vehicle._port} on has landed.")
+                print(f"-- Mission for vehicle {self.vehicle._port} has ended.")
                 return
             
     async def get_home_position(self):
