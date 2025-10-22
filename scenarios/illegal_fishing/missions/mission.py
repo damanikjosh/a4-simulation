@@ -18,6 +18,9 @@ class MissionBase:
     async def on_start(self, *args, **kwargs):
         pass
 
+    async def before_start(self, *args, **kwargs):
+        pass
+
     def get_coroutines(self):
         return []
 
@@ -50,17 +53,37 @@ class MissionBase:
                 if health.is_global_position_ok and health.is_home_position_ok:
                     print(f"-- Global position estimate OK for vehicle {self.vehicle._port}")
                     break
+
+            await self.before_start(*args, **kwargs)
             
             print(f"-- Arming vehicle on {self.vehicle._port}")
+            armed_ok = True
             try:
                 await self.vehicle.action.arm()
             except Exception as e:
                 # Some vehicles (USVs) may not support arming in the same way.
-                # Don't let that stop mission execution; log and continue.
+                # Don't attempt to start a mission if arming failed as the
+                # flight controller will likely DENY mission start. Log and
+                # disable the mission so we don't try to upload/start it.
+                armed_ok = False
                 print(f"-- Warning: arming failed for vehicle {self.vehicle._port}: {e}")
-            
+
+            if not armed_ok:
+                print(f"-- Skipping mission start for vehicle {self.vehicle._port} because arming failed")
+                self.is_enabled = False
+                continue
+
             print(f"-- Starting mission for vehicle on vehicle {self.vehicle._port}")
-            await self.on_start(*args, **kwargs)
+            try:
+                await self.on_start(*args, **kwargs)
+            except Exception as e:
+                # Don't allow mission plugin errors (e.g. DENIED start_mission)
+                # to propagate and crash the orchestrator. Log and disable the
+                # mission so the system can continue.
+                print(f"-- Error while starting mission for vehicle {self.vehicle._port}: {e}")
+                self.is_enabled = False
+                # continue the loop which will wait for re-enable or exit
+                continue
             
             # Monitor mission progress
             running_tasks = self.get_coroutines()
@@ -80,15 +103,21 @@ class MissionBase:
             if is_in_air:
                 was_in_air = is_in_air
 
-            if not self.is_enabled or (was_in_air and not is_in_air):
-                for task in running_tasks:
-                    task.cancel()
-                    try:
-                        await task
-                    except asyncio.CancelledError:
-                        pass
-                print(f"-- Mission for vehicle {self.vehicle._port} has ended.")
-                return
+                if not self.is_enabled or (was_in_air and not is_in_air):
+                    for task in running_tasks:
+                        try:
+                            task.cancel()
+                        except Exception:
+                            pass
+                    for task in running_tasks:
+                        try:
+                            await task
+                        except asyncio.CancelledError:
+                            pass
+                        except Exception as e:
+                            print(f"-- Warning: task for vehicle {self.vehicle._port} raised during cancel/await: {e}")
+                    print(f"-- Mission for vehicle {self.vehicle._port} has ended.")
+                    return
             
     async def get_home_position(self):
         async for home_position in self.vehicle.telemetry.home():

@@ -9,18 +9,17 @@ obstacles = get_chungdo_obstacles()
 
 class WaypointsMission(MissionBase):
 
-    def __init__(self, vehicle, task_points, *args, **kwargs):
+    def __init__(self, vehicle, task_points, *args, return_to_launch_after_mission=False, **kwargs):
         super().__init__(vehicle, *args, **kwargs)
         self.task_points = task_points
         # self.task_indices = np.arange(len(task_points))
         self.done = np.zeros(len(task_points))
+        self.return_to_launch_after_mission = return_to_launch_after_mission
 
-    async def initialize(self, relative_altitude_m=30, speed_m_s=10, return_to_launch_after_mission=False):
-        await super().initialize()
-
+    async def generate_plan(self, relative_altitude_m=30, speed_m_s=20):
         mission_items = []
         current_position = await self.get_position()
-        if not return_to_launch_after_mission:
+        if not self.return_to_launch_after_mission:
             waypoints = np.concatenate([[current_position], self.task_points])
         else:
             home_position = await self.get_home_position()
@@ -45,11 +44,16 @@ class WaypointsMission(MissionBase):
                 camera_photo_distance_m=float('nan'),           # Camera photo distance to use after this mission item (in meters)
                 vehicle_action=MissionItem.VehicleAction.NONE)) # Vehicle action to trigger at this mission item.
         
-        mission_plan = MissionPlan(mission_items)
-    
-        await self.vehicle.mission.set_return_to_launch_after_mission(return_to_launch_after_mission)
+        self.mission_plan = MissionPlan(mission_items)
 
-        await self.vehicle.mission.upload_mission(mission_plan)
+
+    async def initialize(self, relative_altitude_m=30, speed_m_s=20):
+        await super().initialize()
+        await self.vehicle.mission.set_return_to_launch_after_mission(self.return_to_launch_after_mission)
+
+    async def before_start(self):
+        await self.generate_plan()
+        await self.vehicle.mission.upload_mission(self.mission_plan)
 
     async def on_start(self):
         await self.vehicle.mission.start_mission()
@@ -59,6 +63,7 @@ class WaypointsMission(MissionBase):
         return [monitor_progress_cor]
 
     async def monitor_progress(self):
+        
         # Monitor mission progress. Exclude first task (takeoff)
         last_task = 0
         try:
@@ -71,5 +76,5 @@ class WaypointsMission(MissionBase):
                 last_task = current_task
 
         except asyncio.CancelledError:
-            await self.vehicle.mission.clear_mission()
+            pass
 

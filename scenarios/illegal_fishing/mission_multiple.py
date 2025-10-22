@@ -116,10 +116,19 @@ async def run():
     enemy8_waypoint_mission = WaypointsMission(enemy8, [enemy_endpoint], autostart=False)
     enemy9_waypoint_mission = WaypointsMission(enemy9, [enemy_endpoint], autostart=False)
 
+    # Sample random 5 points from obj1_points
+    random_indices = np.random.randint(0, len(obj1_points), size=5)
+    enemy8_random_mission = WaypointsMission(enemy8, [obj1_points[i] for i in random_indices], autostart=True)
+
+    random_indices = np.random.randint(0, len(obj1_points), size=5)
+    enemy9_random_mission = WaypointsMission(enemy9, [obj1_points[i] for i in random_indices], autostart=True)
+
     def on_usv4_arrived(vehicle, target):
+        enemy8_random_mission.disable()
         enemy8_waypoint_mission.enable()
 
     def on_usv5_arrived(vehicle, target):
+        enemy9_random_mission.disable()
         enemy9_waypoint_mission.enable()
 
     usv4_follow_mission = FollowMission(usv4, enemy8, enemies_surveillance, autostart=False, on_arrived=on_usv4_arrived)
@@ -152,24 +161,27 @@ async def run():
                 usv5_follow_mission.enable()
 
 
-    drone1_surveillance_mission = SurveillanceMission(drone1, obj1_solution_points[0], enemies_surveillance, on_drone1_surveillance_enemy_found)
-    drone2_surveillance_mission = SurveillanceMission(drone2, obj1_solution_points[1], enemies_surveillance, on_drone2_surveillance_enemy_found)
-    drone3_surveillance_mission = SurveillanceMission(drone3, obj1_solution_points[2], enemies_surveillance, on_drone3_surveillance_enemy_found)
+    drone1_surveillance_mission = SurveillanceMission(drone1, obj1_solution_points[0], enemies_surveillance, on_drone1_surveillance_enemy_found, return_to_launch_after_mission=True)
+    drone2_surveillance_mission = SurveillanceMission(drone2, obj1_solution_points[1], enemies_surveillance, on_drone2_surveillance_enemy_found, return_to_launch_after_mission=True)
+    drone3_surveillance_mission = SurveillanceMission(drone3, obj1_solution_points[2], enemies_surveillance, on_drone3_surveillance_enemy_found, return_to_launch_after_mission=True)
 
     drone1_follow_mission = FollowMission(drone1, None, enemies_surveillance, autostart=False, altitude=30)
     drone2_follow_mission = FollowMission(drone2, None, enemies_surveillance, autostart=False, altitude=30)
     drone3_follow_mission = FollowMission(drone3, None, enemies_surveillance, autostart=False, altitude=30)
 
 
-    await drone1_surveillance_mission.initialize(return_to_launch_after_mission=True)
-    await drone2_surveillance_mission.initialize(return_to_launch_after_mission=True)
-    await drone3_surveillance_mission.initialize(return_to_launch_after_mission=True)
+    await drone1_surveillance_mission.initialize()
+    await drone2_surveillance_mission.initialize()
+    await drone3_surveillance_mission.initialize()
 
     await usv4_follow_mission.initialize()
     await usv5_follow_mission.initialize()
 
     await enemy8_waypoint_mission.initialize()
     await enemy9_waypoint_mission.initialize()
+
+    await enemy8_random_mission.initialize()
+    await enemy9_random_mission.initialize()
 
     await drone1_follow_mission.initialize()
     await drone2_follow_mission.initialize()
@@ -184,6 +196,8 @@ async def run():
     coroutines.append(asyncio.create_task(usv5_follow_mission.run()))
     coroutines.append(asyncio.create_task(enemy8_waypoint_mission.run()))
     coroutines.append(asyncio.create_task(enemy9_waypoint_mission.run()))
+    coroutines.append(asyncio.create_task(enemy8_random_mission.run()))
+    coroutines.append(asyncio.create_task(enemy9_random_mission.run()))
     coroutines.append(asyncio.create_task(drone1_follow_mission.run()))
     coroutines.append(asyncio.create_task(drone2_follow_mission.run()))
     coroutines.append(asyncio.create_task(drone3_follow_mission.run()))

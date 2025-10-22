@@ -84,7 +84,7 @@ class FollowMission(MissionBase,):
 
                 mission_plan = MissionPlan(mission_items)
 
-                print(f"FollowMission: uploading mission for vehicle {getattr(self.vehicle,'_port','?')} ({len(mission_items)} items)")
+                # print(f"FollowMission: uploading mission for vehicle {getattr(self.vehicle,'_port','?')} ({len(mission_items)} items)")
                 try:
                     await self.vehicle.mission.upload_mission(mission_plan)
                     try:
@@ -92,9 +92,9 @@ class FollowMission(MissionBase,):
                     except Exception:
                         pass
 
-                    print(f"FollowMission: starting mission for vehicle {getattr(self.vehicle,'_port','?')}")
+                    # print(f"FollowMission: starting mission for vehicle {getattr(self.vehicle,'_port','?')}")
                     await self.vehicle.mission.start_mission()
-                    print(f"FollowMission: started mission for vehicle {getattr(self.vehicle,'_port','?')}")
+                    # print(f"FollowMission: started mission for vehicle {getattr(self.vehicle,'_port','?')}")
                 except Exception as e:
                     print(f"FollowMission: mission upload/start failed for vehicle {getattr(self.vehicle,'_port','?')}: {e}")
 
